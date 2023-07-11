@@ -1,0 +1,7 @@
+{
+    "pack": {
+        "description": "steveslib resources",
+        "pack_format": 9,
+        "forge:server_data_pack_format": 10
+    }
+}
