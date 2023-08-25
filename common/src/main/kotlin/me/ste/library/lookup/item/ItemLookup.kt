@@ -1,10 +1,13 @@
 package me.ste.library.lookup.item
 
-import net.minecraft.core.BlockPos
+import me.ste.library.container.resource.ResourceHolder
+import me.ste.library.resource.ItemResource
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.level.Level
 import java.util.function.Consumer
 
-fun interface ItemLookup<T> {
+interface ItemLookup<T> {
+    fun getReadOnly(stack: ItemStack): T?
+
     fun get(stack: ItemStack, setStack: Consumer<ItemStack>): T?
+    fun get(holder: ResourceHolder<ItemResource>): T?
 }

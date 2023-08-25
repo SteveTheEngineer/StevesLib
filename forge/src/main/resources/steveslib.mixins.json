@@ -4,6 +4,9 @@
     "package": "me.ste.library.forge.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
+        "common.BlockEntityExtensionsMixin",
+        "common.BlockExtensionsMixin",
+        "common.ItemAccessor"
     ],
     "client": [
     ],
