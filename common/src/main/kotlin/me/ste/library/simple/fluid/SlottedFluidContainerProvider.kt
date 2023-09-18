@@ -1,4 +1,4 @@
-package me.ste.library.simple.slot.fluid
+package me.ste.library.simple.fluid
 
 import me.ste.library.container.resource.ResourceContainer
 import me.ste.library.container.resource.ResourceHolder

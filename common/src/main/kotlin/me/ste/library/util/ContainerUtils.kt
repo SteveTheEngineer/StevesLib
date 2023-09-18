@@ -9,20 +9,22 @@ import me.ste.library.transaction.TransactionShard
 import net.minecraft.core.Direction
 
 object ContainerUtils {
-    fun <T> transfer(source: ResourceHolder<T>, target: ResourceContainer<T>, maxAmount: Long, transaction: TransactionShard): Long {
-        if (maxAmount <= 0L || source.isEmpty) {
+    fun <T> transfer(sourceContainer: ResourceContainer<T>, resource: T, target: ResourceContainer<T>, maxAmount: Long, transaction: TransactionShard): Long {
+        if (maxAmount <= 0L) {
             return 0L
         }
 
-        val resource = source.resource
-
         val canOutput = transaction.openTransaction<Long> {
-            source.output(maxAmount, it)
+            sourceContainer.output(resource, maxAmount, it)
+        }
+
+        if (canOutput <= 0L) {
+            return 0L
         }
 
         return transaction.openTransaction<Long> {
             val accepted = target.accept(resource, canOutput, it)
-            val output = source.output(accepted, it)
+            val output = sourceContainer.output(resource, accepted, it)
 
             if (accepted != output) {
                 return@openTransaction 0L
@@ -41,7 +43,11 @@ object ContainerUtils {
                 break
             }
 
-            remaining -= this.transfer(holder, target, remaining, transaction)
+            if (holder.isEmpty) {
+                continue
+            }
+
+            remaining -= this.transfer(source, holder.resource, target, remaining, transaction)
         }
 
         return maxAmount - remaining
@@ -54,6 +60,10 @@ object ContainerUtils {
 
         val canOutput = transaction.openTransaction<Long> {
             source.output(maxAmount, it)
+        }
+
+        if (canOutput <= 0L) {
+            return 0L
         }
 
         return transaction.openTransaction<Long> {

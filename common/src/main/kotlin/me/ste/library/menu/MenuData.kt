@@ -24,6 +24,8 @@ object MenuData {
             val buf = FriendlyByteBuf(Unpooled.buffer())
             entry.write(buf)
             map[index] = buf.array()
+
+            entry.markSynced()
         }
 
         if (map.isEmpty()) {

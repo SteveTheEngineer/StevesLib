@@ -25,7 +25,7 @@ class MenuDataMessageS2C : NetworkMessage {
         buf.writeMap(this.data, FriendlyByteBuf::writeVarInt, FriendlyByteBuf::writeByteArray)
     }
 
-    override fun handle(context: NetworkManager.PacketContext) {
+    override fun handle(context: NetworkManager.PacketContext) { // TODO something broken here
         context.queue {
             if (context.player.containerMenu.containerId != this.containerId) {
                 return@queue
@@ -41,7 +41,6 @@ class MenuDataMessageS2C : NetworkMessage {
                 val buf = FriendlyByteBuf(Unpooled.wrappedBuffer(array))
 
                 entry.read(buf)
-                entry.markSynced()
             }
         }
     }

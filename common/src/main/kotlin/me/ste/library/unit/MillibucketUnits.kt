@@ -16,7 +16,7 @@ object MillibucketUnits {
 
     fun toPlatformUnits(millibuckets: Long): Long {
         if (millibuckets > MAX_OPERATION_AMOUNT) {
-            throw IllegalArgumentException("Provided value is greater than the maximum operation amount. $millibuckets > $MAX_OPERATION_AMOUNT")
+            return MAX_OPERATION_AMOUNT * (FluidStack.bucketAmount() / 1000L)
         }
 
         return millibuckets * (FluidStack.bucketAmount() / 1000L)

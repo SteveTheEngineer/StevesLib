@@ -97,7 +97,9 @@ open class FluidContainerAdapter(
     }
 
     override fun drain(amount: Int, action: IFluidHandler.FluidAction): FluidStack {
-        val holder = this.container.first { it.canOutput && !it.isEmpty }
+        val holder = this.container.firstOrNull { it.canOutput && !it.isEmpty }
+            ?: return FluidStack.EMPTY
+
         val resource = holder.resource
 
         var output = 0

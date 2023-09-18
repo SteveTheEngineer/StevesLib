@@ -1,4 +1,4 @@
-package me.ste.library.simple.slot.fluid
+package me.ste.library.simple.fluid
 
 import dev.architectury.fluid.FluidStack
 import dev.architectury.utils.Amount
@@ -14,7 +14,7 @@ class SlottedFluidContainerHolder(
     protected val container: SlottedFluidContainer,
     override val slot: Int
 ) : ResourceHolder<FluidResource> {
-    private val snapshots = SnapshotHolder(this::fluid, { this.container.setFluid(this.slot, it) }) {}
+    private val snapshots = SnapshotHolder({ this.fluid.copy() }, { this.container.setFluid(this.slot, it) }) {}
 
     protected var fluid: FluidStack
         get() = this.container.getFluid(this.slot)

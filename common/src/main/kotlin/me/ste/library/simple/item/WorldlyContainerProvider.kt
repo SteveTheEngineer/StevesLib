@@ -1,17 +1,19 @@
-package me.ste.library.simple.slot.item
+package me.ste.library.simple.item
 
 import me.ste.library.container.resource.ResourceContainer
 import me.ste.library.container.resource.ResourceHolder
-import me.ste.library.container.slotted.SlottedItemContainer
 import me.ste.library.resource.ItemResource
 import me.ste.library.transaction.TransactionShard
+import net.minecraft.core.Direction
+import net.minecraft.world.WorldlyContainer
 
-open class SlottedItemContainerProvider(
-    private val container: SlottedItemContainer
+open class WorldlyContainerProvider(
+    protected val container: WorldlyContainer,
+    protected val side: Direction
 ) : ResourceContainer<ItemResource> {
-    override val slots get() = this.container.size
+    override val slots get() = this.container.getSlotsForFace(this.side).size
 
-    override fun getSlot(slot: Int) = SlottedItemContainerHolder(this.container, slot)
+    override fun getSlot(slot: Int) = WorldlyContainerHolder(this.container, this.side, this.container.getSlotsForFace(this.side)[slot])
 
     override val canAccept get() = true
 
@@ -59,8 +61,8 @@ open class SlottedItemContainerProvider(
         var slot = 0
 
         return object : Iterator<ResourceHolder<ItemResource>> {
-            override fun hasNext() = slot < this@SlottedItemContainerProvider.slots
-            override fun next() = this@SlottedItemContainerProvider.getSlot(slot++)
+            override fun hasNext() = slot < this@WorldlyContainerProvider.slots
+            override fun next() = this@WorldlyContainerProvider.getSlot(slot++)
         }
     }
 }

@@ -13,24 +13,42 @@ class SnapshotHolder<T>(
     private val snapshots = mutableMapOf<Int, T>()
 
     fun track(transaction: TransactionShard) {
-        if (this.snapshots.isEmpty()) {
-            transaction.onFinalEnd {
-                if (it != TransactionResult.KEEP) {
-                    return@onFinalEnd
-                }
-
-                this.onKeep.run()
-            }
+        if (transaction.depth in this.snapshots) {
+            return
         }
 
         this.snapshots[transaction.depth] = this.snapshotSupplier.get()
 
         transaction.onEnd {
-            if (it == TransactionResult.REVERT) {
-                this.snapshotConsumer.accept(this.snapshots[transaction.depth]!!)
-            }
+            this.onTransactionEnd(transaction, it)
+        }
+    }
 
-            this.snapshots -= transaction.depth
+    private fun onTransactionEnd(transaction: TransactionShard, result: TransactionResult) {
+        val snapshot = this.snapshots.remove(transaction.depth)
+            ?: return
+
+        if (result == TransactionResult.REVERT) {
+            this.snapshotConsumer.accept(snapshot)
+            return
+        }
+
+        val parent = transaction.parent
+
+        if (parent == null) {
+            transaction.onFinalEnd {
+                this.onKeep.run()
+            }
+            return
+        }
+
+        if (parent.depth in this.snapshots) {
+            return
+        }
+
+        this.snapshots[parent.depth] = snapshot
+        parent.onEnd {
+            this.onTransactionEnd(parent, it)
         }
     }
 }

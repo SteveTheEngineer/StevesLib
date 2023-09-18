@@ -27,6 +27,10 @@ class ResourceContainerReverseAdapter<T : VanillaResource<*>, V>(
     override fun canOutput(resource: T) = this.canOutput
 
     override fun accept(resource: T, amount: Long, transaction: TransactionShard): Long {
+        if (resource.isEmpty) {
+            return 0L
+        }
+
         val nativeTransaction = TransactionsImpl.getContext(transaction)
         val nativeResource = this.reverseConverter.apply(resource)
 
@@ -34,6 +38,10 @@ class ResourceContainerReverseAdapter<T : VanillaResource<*>, V>(
     }
 
     override fun output(resource: T, amount: Long, transaction: TransactionShard): Long {
+        if (resource.isEmpty) {
+            return 0L
+        }
+
         val nativeTransaction = TransactionsImpl.getContext(transaction)
         val nativeResource = this.reverseConverter.apply(resource)
 

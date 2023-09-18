@@ -5,7 +5,7 @@ import me.ste.library.transaction.TransactionResult
 import java.util.function.Consumer
 
 class ForgeTransaction(
-    val parent: ForgeTransaction? = null,
+    override val parent: ForgeTransaction? = null,
     override val depth: Int = 0
 ) : MutableTransactionShard {
     val onEndCallbacks = mutableListOf<Consumer<TransactionResult>>()

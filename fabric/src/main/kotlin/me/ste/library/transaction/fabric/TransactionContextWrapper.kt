@@ -10,6 +10,14 @@ import java.util.function.Consumer
 open class TransactionContextWrapper(
     val transaction: TransactionContext
 ) : TransactionShard {
+    override val parent: TransactionShard? get() {
+        try {
+            val fabricParent = this.transaction.getOpenTransaction(this.transaction.nestingDepth() - 1)
+            return TransactionContextWrapper(fabricParent)
+        } catch (t: Throwable) {
+            return null
+        }
+    }
     override val depth get() = this.transaction.nestingDepth()
 
     override fun onEnd(callback: Consumer<TransactionResult>) {

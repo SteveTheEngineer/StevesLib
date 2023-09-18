@@ -24,6 +24,11 @@ class ResourceHolderReverseAdapter<T : VanillaResource<*>, V>(
 
     override fun output(amount: Long, transaction: TransactionShard): Long {
         val nativeTransaction = TransactionsImpl.getContext(transaction)
+
+        if (this.view.isResourceBlank) {
+            return 0L
+        }
+
         return this.view.extract(this.view.resource, amount, nativeTransaction)
     }
 

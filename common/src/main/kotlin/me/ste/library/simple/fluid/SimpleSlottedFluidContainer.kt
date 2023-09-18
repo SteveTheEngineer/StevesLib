@@ -1,4 +1,4 @@
-package me.ste.library.simple.slot.fluid
+package me.ste.library.simple.fluid
 
 import dev.architectury.fluid.FluidStack
 import me.ste.library.container.slotted.SlottedFluidContainer

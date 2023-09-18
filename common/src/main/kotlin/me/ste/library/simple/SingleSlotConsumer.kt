@@ -25,6 +25,10 @@ class SingleSlotConsumer(
     override fun accept(resource: ItemResource, amount: Long, transaction: TransactionShard): Long {
         this.snapshots.track(transaction)
 
+        if (this.amount > 0L && !this.resource.isEmpty && !this.resource.isSame(resource)) {
+            return 0L
+        }
+
         val toAccept = amount.coerceAtMost(this.capacity - this.amount)
         this.amount += toAccept
 
