@@ -2,27 +2,30 @@ package me.ste.library
 
 import dev.architectury.event.EventResult
 import dev.architectury.event.events.client.ClientChatEvent
+import dev.architectury.platform.Platform
 import dev.architectury.registry.registries.Registries
 import dev.architectury.utils.Env
-import io.netty.buffer.Unpooled
 import me.ste.library.container.PlatformContainers
 import me.ste.library.container.provider.ContainerProviderBlockEntity
 import me.ste.library.container.provider.ContainerProviderItem
-import me.ste.library.internal.network.StevesLibNetwork
-import me.ste.library.internal.network2.ConnectionStatus
-import me.ste.library.internal.network2.StevesLibConnection
-import me.ste.library.internal.network2.StevesLibNetworkInternals
-import me.ste.library.network2.StevesLibNetworkEvent
+import me.ste.library.network.StevesLibConnection
+import me.ste.library.network.builtin.StevesLibBuiltinChannel
+import me.ste.library.network.channel.NetworkChannelConnection
+import me.ste.library.network.channel.obj.NetworkMessage
+import me.ste.library.network.channel.obj.ObjectNetworkChannel
+import net.fabricmc.api.EnvType
 import net.minecraft.client.Minecraft
 import net.minecraft.core.Registry
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
-import java.util.*
+import org.apache.logging.log4j.LogManager
 
 object StevesLib {
     const val MOD_ID = "steveslib"
+
+    val LOGGER = LogManager.getLogger(this)
 
     val REGISTRIES by lazy {
         Registries.get(MOD_ID)
@@ -36,9 +39,6 @@ object StevesLib {
     }
 
     fun init() {
-        StevesLibNetwork.register()
-        StevesLibNetworkInternals.register()
-
         PlatformContainers.ITEMS.register { level, pos, side, state, lazyEntity ->
             val entity = lazyEntity.get() ?: return@register null
             (entity as? ContainerProviderBlockEntity)?.getItemContainer(side)
@@ -59,37 +59,43 @@ object StevesLib {
             (it.resource.obj as? ContainerProviderItem)?.getEnergyContainer(it)
         }
 
-        val channelId = ResourceLocation(MOD_ID, "example")
+        StevesLibBuiltinChannel.register()
+        class TestMessage : NetworkMessage {
+            private val stack: ItemStack
 
-        ClientChatEvent.SEND.register { str, component ->
-            val connection = StevesLibConnection.get(Minecraft.getInstance().connection!!.connection)
-
-            if (connection.status != ConnectionStatus.READY) {
-                println("Unable to send the packet due to the connection being in the status ${connection.status}")
-                return@register EventResult.pass()
+            constructor(buf: FriendlyByteBuf) {
+                this.stack = buf.readItem()
             }
 
-            val buf = FriendlyByteBuf(Unpooled.buffer())
+            constructor(stack: ItemStack) {
+                this.stack = stack
+            }
 
-            buf.writeItem(
-                ItemStack(Items.DIAMOND, 64)
-            )
+            override fun encode(buf: FriendlyByteBuf) {
+                buf.writeItem(this.stack)
+            }
 
-            connection.sendChannelMessage(channelId, buf)
-
-            EventResult.pass()
+            override fun handle(channelConnection: NetworkChannelConnection) {
+                val connection = channelConnection.connection
+                val player = connection.player ?: return
+                player.inventory.add(this.stack.copy())
+            }
         }
 
-        StevesLibNetworkEvent.LOGIN_CONNECTION_READY.register {
-            if (it.env != Env.SERVER) {
-                return@register
-            }
+        val channel = ObjectNetworkChannel(ResourceLocation(MOD_ID, "example"), 0)
+        channel.registerMessage(0, Env.SERVER, ::TestMessage)
+        channel.register()
 
-            it.registerHandler(channelId) { buf ->
-                val player = it.player ?: return@registerHandler
+        if (Platform.getEnv() == EnvType.CLIENT) {
+            ClientChatEvent.SEND.register { _, _ ->
+                val handler = Minecraft.getInstance().connection
+                    ?: return@register EventResult.pass()
 
-                val stack = buf.readItem()
-                player.inventory.add(stack)
+                val connection = StevesLibConnection.get(handler.connection)
+
+                channel.sendMessage(connection, TestMessage(ItemStack(Items.DIAMOND, 64)))
+
+                EventResult.pass()
             }
         }
     }

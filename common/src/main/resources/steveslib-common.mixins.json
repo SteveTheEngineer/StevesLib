@@ -1,21 +1,24 @@
 {
-    "required": true,
-    "minVersion": "0.8",
-    "package": "me.ste.library.mixin",
-    "compatibilityLevel": "JAVA_17",
-    "mixins": [
-        "common.DataGeneratorMixin",
-        "common.DataMainMixin",
-        "common.ConnectionMixin",
-        "common.ServerLoginPacketListenerImplMixin"
-    ],
-    "client": [
-        "client.BlockMarkerMixin",
-        "client.BlockModelShaperMixin",
-        "client.TerrainParticleMixin",
-        "client.ClientHandshakePacketListenerImplMixin"
-    ],
-    "injectors": {
-        "defaultRequire": 1
-    }
+  "required": true,
+  "minVersion": "0.8",
+  "package": "me.ste.library.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "common.ConnectionMixin",
+    "common.DataGeneratorMixin",
+    "common.DataMainMixin",
+    "common.ServerGamePacketListenerImplMixin",
+    "common.ServerLoginPacketListenerImplMixin"
+  ],
+  "client": [
+    "client.BlockMarkerMixin",
+    "client.BlockModelShaperMixin",
+    "client.ClientHandshakePacketListenerImplMixin",
+    "client.ClientPacketListenerMixin",
+    "client.MinecraftAccessor",
+    "client.TerrainParticleMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

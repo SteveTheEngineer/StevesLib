@@ -9,6 +9,12 @@ architectury {
     fabric()
 }
 
+loom {
+    accessWidenerPath.set(
+        project(":common").extensions.getByName<LoomGradleExtension>("loom").accessWidenerPath.get()
+    )
+}
+
 val common = configurations.create("common")
 val shadowCommon = configurations.create("shadowCommon")
 

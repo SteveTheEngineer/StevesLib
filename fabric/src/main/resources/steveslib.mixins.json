@@ -6,6 +6,7 @@
     "mixins": [
         "common.EntityMixin",
         "common.LivingEntityMixin",
+        "common.ServerLoginNetworkAddonMixin",
         "common.level.LevelChunkMixin",
         "common.level.LevelMixin"
     ],

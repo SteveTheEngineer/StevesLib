@@ -19,12 +19,6 @@
         "adapter": "kotlin",
         "value": "me.ste.library.fabric.StevesLibFabric"
       }
-    ],
-    "client": [
-      {
-        "adapter": "kotlin",
-        "value": "me.ste.library.fabric.client.StevesLibFabricClient"
-      }
     ]
   },
   "mixins": [

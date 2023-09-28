@@ -1,11 +1,16 @@
 package me.ste.library.mixin.client;
 
-import me.ste.library.internal.network2.ConnectionStatus;
-import me.ste.library.internal.network2.StevesLibConnection;
-import me.ste.library.internal.network2.StevesLibNetworkInternals;
+import me.ste.library.network.ConnectionStatus;
+import me.ste.library.network.StevesLibConnection;
+import me.ste.library.network.StevesLibNetwork;
+import me.ste.library.network.StevesLibNetworkEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ProgressScreen;
 import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl;
 import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
+import net.minecraft.network.protocol.login.ClientboundGameProfilePacket;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -17,27 +22,43 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ClientHandshakePacketListenerImplMixin {
     @Shadow @Final private Connection connection;
 
+    @Shadow @Final private Minecraft minecraft;
+
     @Inject(method = "handleCustomQuery", at = @At("HEAD"), cancellable = true)
     public void handleCustomQuery(ClientboundCustomQueryPacket packet, CallbackInfo ci) {
-        var connection = StevesLibConnection.Companion.get(this.connection);
-
-        if (!packet.getIdentifier().equals(StevesLibNetworkInternals.INSTANCE.getCHANNEL_ID())) {
-            return;
-        }
-
-        if (connection.getStatus() != ConnectionStatus.READY) {
-            if (connection.getStatus() == ConnectionStatus.NEGOTIATING_RESERVATION) {
-                connection.setLoginTransactionId(packet.getTransactionId());
-            }
-
-            return;
-        }
-
-        if (connection.getLoginTransactionId() != packet.getTransactionId()) {
+        if (packet.getTransactionId() != StevesLibNetwork.INSTANCE.getTRANSACTION_ID() || !packet.getIdentifier().equals(StevesLibNetwork.INSTANCE.getCHANNEL_ID())) {
             return;
         }
 
         ci.cancel();
-        connection.handleRawData(packet.getData());
+
+        var data = packet.getData();
+        var connection = StevesLibConnection.Companion.get(this.connection);
+        connection.handleRawData(data);
+    }
+
+    @Inject(method = "handleGameProfile", at = @At("HEAD"))
+    public void handleGameProfile(ClientboundGameProfilePacket packet, CallbackInfo ci) {
+        var connection = StevesLibConnection.Companion.get(this.connection);
+
+        if (!connection.getStatus().isFinal()) {
+            connection.setStatus(ConnectionStatus.UNSUPPORTED);
+            StevesLibNetworkEvent.INSTANCE.getCONNECTION_FINAL_STATUS().invoker().finalStatus(connection);
+        }
+    }
+
+    @Inject(method = "onDisconnect", at = @At("HEAD"))
+    public void onDisconnect(Component reason, CallbackInfo ci) {
+        var server = this.minecraft.getSingleplayerServer();
+
+        if (server == null) {
+            return;
+        }
+
+        ((MinecraftAccessor) this.minecraft).invokeUpdateScreenAndTick(new ProgressScreen(true));
+
+        while (!server.isShutdown()) {
+            ((MinecraftAccessor) this.minecraft).invokeRunTick(false);
+        }
     }
 }

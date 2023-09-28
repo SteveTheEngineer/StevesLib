@@ -10,8 +10,12 @@ architectury {
 }
 
 loom {
+    val widenerFile = project(":common").extensions.getByName<LoomGradleExtension>("loom").accessWidenerPath.get()
+    accessWidenerPath.set(widenerFile)
+
     forge {
         mixinConfigs("steveslib.mixins.json", "steveslib-common.mixins.json")
+        convertAccessWideners.set(true)
     }
 }
 

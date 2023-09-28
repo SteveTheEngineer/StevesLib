@@ -1,5 +1,6 @@
-package me.ste.library.internal.network2
+package me.ste.library.internal
 
+import me.ste.library.network.StevesLibConnection
 import net.minecraft.network.ConnectionProtocol
 
 interface ConnectionMixinExtension {

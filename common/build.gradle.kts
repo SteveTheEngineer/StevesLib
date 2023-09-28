@@ -7,6 +7,12 @@ architectury {
     common {}
 }
 
+loom {
+    accessWidenerPath.set(
+        File("src/main/resources/steveslib.accesswidener")
+    )
+}
+
 publishing {
     publications {
         create<MavenPublication>("mavenCommon") {
