@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("architectury-plugin") version "3.4.146"
     id("dev.architectury.loom") version "1.1.346" apply false
-    id("maven-publish")
 
     kotlin("jvm") version "1.8.21" apply false
 }
