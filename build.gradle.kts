@@ -2,7 +2,7 @@ import net.fabricmc.loom.LoomGradleExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("architectury-plugin") version "3.4-SNAPSHOT"
+    id("architectury-plugin") version "3.4.146"
     id("dev.architectury.loom") version "1.1-SNAPSHOT" apply false
     id("maven-publish")
 
