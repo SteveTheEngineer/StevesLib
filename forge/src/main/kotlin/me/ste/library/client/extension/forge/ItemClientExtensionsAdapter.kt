@@ -10,6 +10,7 @@ import net.minecraft.server.packs.resources.ResourceManager
 import net.minecraft.util.profiling.ProfilerFiller
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.item.ItemStack
 import net.minecraftforge.client.extensions.common.IClientItemExtensions
 import java.util.concurrent.CompletableFuture
@@ -34,13 +35,13 @@ class ItemClientExtensionsAdapter(
 
                 override fun renderByItem(
                     stack: ItemStack,
-                    transformType: ItemTransforms.TransformType,
+                    context: ItemDisplayContext,
                     poseStack: PoseStack,
                     bufferSource: MultiBufferSource,
                     packedLight: Int,
                     packedOverlay: Int
                 ) {
-                    extensions.renderDynamicItem(stack, transformType, poseStack, bufferSource, packedLight, packedOverlay)
+                    extensions.renderDynamicItem(stack, context, poseStack, bufferSource, packedLight, packedOverlay)
                 }
             }
         } else {

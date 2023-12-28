@@ -26,8 +26,8 @@ public abstract class LivingEntityMixin extends Entity {
                 Mth.floor(this.getZ())
         );
 
-        var state = this.level.getBlockState(pos);
+        var state = this.level().getBlockState(pos);
 
-        return BlockExtensionsHelper.INSTANCE.applySoundType(old, this.level, pos, state, this);
+        return BlockExtensionsHelper.INSTANCE.applySoundType(old, this.level(), pos, state, this);
     }
 }

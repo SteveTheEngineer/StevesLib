@@ -1,7 +1,7 @@
 import net.fabricmc.loom.LoomGradleExtension
 
 plugins {
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 architectury {
@@ -32,14 +32,15 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${rootProject.property("fabric_loader_version")}")
     modApi("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_api_version")}")
 
-    modImplementation("net.fabricmc:fabric-language-kotlin:1.9.4+kotlin.1.8.21")
+    modImplementation("net.fabricmc:fabric-language-kotlin:1.10.17+kotlin.1.9.22")
     modApi("dev.architectury:architectury-fabric:${rootProject.property("architectury_version")}") {
         exclude(group = "net.fabricmc", module = "fabric-loader")
     }
     include(
-        modApi("teamreborn:energy:2.3.0") {
+        modApi("teamreborn:energy:3.0.0") {
             exclude(group = "net.fabricmc.fabric-api")
             exclude(group = "net.fabricmc", module = "fabric-loader")
+            isTransitive = false
         }
     )
 
@@ -54,6 +55,10 @@ tasks.processResources {
     filesMatching("fabric.mod.json") {
         expand(replaceTokens)
     }
+
+    from(
+        project(":common").extensions.getByName<LoomGradleExtension>("loom").accessWidenerPath.get()
+    )
 }
 
 tasks.shadowJar {

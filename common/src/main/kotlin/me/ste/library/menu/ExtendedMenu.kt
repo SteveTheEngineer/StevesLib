@@ -18,7 +18,7 @@ abstract class ExtendedMenu(
     override val containerId get() = super.containerId
 
     protected val player get() = this.inventory.player
-    protected val level get() = this.player.level
+    protected val level get() = this.player.level()
 
     override fun broadcastChanges() {
         super.broadcastChanges()

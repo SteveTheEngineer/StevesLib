@@ -42,7 +42,7 @@ object NetworkMessageDistribution {
         val server = GameInstance.getServer()!!
 
         for (player in server.playerList.players) {
-            if (player.level.dimension() != level) {
+            if (player.level().dimension() != level) {
                 continue
             }
 
@@ -58,7 +58,7 @@ object NetworkMessageDistribution {
                 continue
             }
 
-            if (player.level.dimension() != level) {
+            if (player.level().dimension() != level) {
                 continue
             }
 
@@ -75,7 +75,7 @@ object NetworkMessageDistribution {
     }
 
     fun <T> trackingEntity(consumer: BiConsumer<Connection, T>, message: T, entity: Entity) {
-        val chunkMap = (entity.level as ServerLevel).chunkSource.chunkMap
+        val chunkMap = (entity.level() as ServerLevel).chunkSource.chunkMap
         val entityMap = chunkMap.entityMap
         val trackedEntity = entityMap.get(entity.id) ?: return
 

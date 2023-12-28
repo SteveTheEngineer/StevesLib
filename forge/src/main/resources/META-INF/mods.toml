@@ -25,13 +25,13 @@ description="${description}"
 [[dependencies.steveslib]]
 modId="forge"
 mandatory=true
-versionRange="[43.2.11,)"
+versionRange="[47.2.19,)"
 ordering="NONE"
 side="BOTH"
 
 [[dependencies.steveslib]]
 modId="minecraft"
 mandatory=true
-versionRange="1.19.2"
+versionRange="1.20.1"
 ordering="NONE"
 side="BOTH"

@@ -2,10 +2,10 @@ import net.fabricmc.loom.LoomGradleExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("architectury-plugin") version "3.4.146"
-    id("dev.architectury.loom") version "1.1.346" apply false
+    id("architectury-plugin") version "3.4.151"
+    id("dev.architectury.loom") version "1.4.373" apply false
 
-    kotlin("jvm") version "1.8.21" apply false
+    kotlin("jvm") version "1.9.22" apply false
 }
 
 val minecraftVersion = rootProject.property("minecraft_version") as String

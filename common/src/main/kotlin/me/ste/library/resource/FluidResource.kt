@@ -1,8 +1,11 @@
 package me.ste.library.resource
 
 import dev.architectury.fluid.FluidStack
+import dev.architectury.registry.registries.RegistrarManager
 import me.ste.library.StevesLib
 import net.minecraft.core.Registry
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.network.FriendlyByteBuf
@@ -44,7 +47,7 @@ data class FluidResource(
         }
 
         buf.writeBoolean(true)
-        buf.writeId(Registry.FLUID, this.obj)
+        buf.writeId(BuiltInRegistries.FLUID, this.obj)
         buf.writeNbt(this.tag)
     }
 
@@ -69,7 +72,7 @@ data class FluidResource(
                 return EMPTY
             }
 
-            val fluid = buf.readById(Registry.FLUID) ?: return EMPTY
+            val fluid = buf.readById(BuiltInRegistries.FLUID) ?: return EMPTY
             val tag = buf.readNbt()
 
             return FluidResource(fluid, tag)

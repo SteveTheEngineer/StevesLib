@@ -1,8 +1,8 @@
 package me.ste.library.resource
 
-import dev.architectury.registry.registries.Registries
 import me.ste.library.StevesLib
 import net.minecraft.core.Registry
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.network.FriendlyByteBuf
@@ -47,7 +47,7 @@ data class ItemResource(
         }
 
         buf.writeBoolean(true)
-        buf.writeId(Registry.ITEM, this.obj)
+        buf.writeId(BuiltInRegistries.ITEM, this.obj)
         buf.writeNbt(this.tag)
     }
 
@@ -72,7 +72,7 @@ data class ItemResource(
                 return EMPTY
             }
 
-            val item = buf.readById(Registry.ITEM) ?: return EMPTY
+            val item = buf.readById(BuiltInRegistries.ITEM) ?: return EMPTY
             val tag = buf.readNbt()
 
             return ItemResource(item, tag)
