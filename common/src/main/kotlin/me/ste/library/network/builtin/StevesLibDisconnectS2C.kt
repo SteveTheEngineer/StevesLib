@@ -21,7 +21,7 @@ class StevesLibDisconnectS2C : NetworkMessage {
     }
 
     override fun handle(connection: NetworkChannelConnection) {
-        connection.connection.getConnectionData(StevesLibConnectionData.KEY).customDisconnect = true
-        connection.connection.connection.disconnect(this.reason)
+        connection.libraryConnection.getConnectionData(StevesLibConnectionData.KEY).customDisconnect = true
+        connection.libraryConnection.vanillaConnection.disconnect(this.reason)
     }
 }

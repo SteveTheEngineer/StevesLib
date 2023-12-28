@@ -62,11 +62,19 @@ public class ServerLoginPacketListenerImplMixin {
             return;
         }
 
-        StevesLibNetworkEvent.INSTANCE.getLOGIN_READY_TO_ACCEPT().invoker().process((ServerLoginPacketListenerImpl) (Object) this, ci::cancel);
+        var result = StevesLibNetworkEvent.Companion.getLOGIN_READY_TO_ACCEPT().invoker().process((ServerLoginPacketListenerImpl) (Object) this);
+
+        if (result.isFalse()) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;disconnect(Lnet/minecraft/network/chat/Component;)V"), cancellable = true)
     public void tickTimeout(CallbackInfo ci) {
-        StevesLibNetworkEvent.INSTANCE.getLOGIN_TIMEOUT().invoker().process((ServerLoginPacketListenerImpl) (Object) this, ci::cancel);
+        var result = StevesLibNetworkEvent.Companion.getLOGIN_TIMEOUT().invoker().process((ServerLoginPacketListenerImpl) (Object) this);
+
+        if (result.isFalse()) {
+            ci.cancel();
+        }
     }
 }

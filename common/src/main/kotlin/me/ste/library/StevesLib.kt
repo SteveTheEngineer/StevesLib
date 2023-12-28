@@ -8,17 +8,22 @@ import dev.architectury.utils.Env
 import me.ste.library.container.PlatformContainers
 import me.ste.library.container.provider.ContainerProviderBlockEntity
 import me.ste.library.container.provider.ContainerProviderItem
+import me.ste.library.internal.CommonListener
+import me.ste.library.internal.client.StevesLibClient
+import me.ste.library.network.PacketSinks
 import me.ste.library.network.StevesLibConnection
 import me.ste.library.network.builtin.StevesLibBuiltinChannel
 import me.ste.library.network.channel.NetworkChannelConnection
 import me.ste.library.network.channel.obj.NetworkMessage
 import me.ste.library.network.channel.obj.ObjectNetworkChannel
+import me.ste.library.network.channel.obj.ServerNetworkMessage
 import net.fabricmc.api.EnvType
 import net.minecraft.client.Minecraft
-import net.minecraft.core.Registry
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.MinecraftServer
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import org.apache.logging.log4j.LogManager
@@ -60,6 +65,12 @@ object StevesLib {
             (it.resource.obj as? ContainerProviderItem)?.getEnergyContainer(it)
         }
 
+        CommonListener.register()
+
         StevesLibBuiltinChannel.register()
+
+        if (Platform.getEnv() == EnvType.CLIENT) {
+            StevesLibClient.init()
+        }
     }
 }

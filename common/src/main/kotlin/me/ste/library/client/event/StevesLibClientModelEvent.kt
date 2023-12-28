@@ -6,8 +6,10 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.resources.ResourceManager
 import java.util.function.Consumer
 
-object ClientModelEvent {
-    val PROVIDE_MODELS: Event<ProvideModels> = EventFactory.createLoop()
+interface StevesLibClientModelEvent {
+    companion object {
+        val PROVIDE_MODELS: Event<ProvideModels> = EventFactory.createLoop()
+    }
 
     fun interface ProvideModels {
         fun provide(manager: ResourceManager, consumer: Consumer<ResourceLocation>)

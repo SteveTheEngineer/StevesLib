@@ -1,3 +1,5 @@
+rootProject.name = "StevesLib"
+
 pluginManagement {
     repositories {
         maven("https://maven.fabricmc.net/")

@@ -34,7 +34,7 @@ public abstract class ConnectionMixin implements ConnectionMixinExtension {
             return;
         }
 
-        StevesLibNetworkEvent.INSTANCE.getCONNECTION_END().invoker().end(this.stevesLibConnection);
+        StevesLibNetworkEvent.Companion.getCONNECTION_END().invoker().end(this.stevesLibConnection);
     }
 
     @NotNull

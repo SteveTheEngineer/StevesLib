@@ -2,14 +2,18 @@ package me.ste.library.network.channel
 
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
+import dev.architectury.event.EventResult
 import dev.architectury.utils.Env
 import io.netty.buffer.Unpooled
 import me.ste.library.network.ConnectionStatus
 import me.ste.library.network.StevesLibConnection
+import me.ste.library.network.StevesLibNetwork
 import me.ste.library.network.StevesLibNetworkEvent
 import me.ste.library.network.data.ConnectionDataKey
 import net.minecraft.network.Connection
+import net.minecraft.network.ConnectionProtocol
 import net.minecraft.network.FriendlyByteBuf
+import net.minecraft.network.protocol.Packet
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.network.ServerLoginPacketListenerImpl
 import java.util.function.Consumer
@@ -28,7 +32,7 @@ abstract class NetworkChannel {
     protected fun onFinalStatusInternal(connection: NetworkChannelConnection) {
         this.onFinalStatus(connection)
 
-        for (listener in this.finalStatusListeners.removeAll(connection.connection.connection)) {
+        for (listener in this.finalStatusListeners.removeAll(connection.libraryConnection.vanillaConnection)) {
             listener.accept(connection)
         }
     }
@@ -43,7 +47,7 @@ abstract class NetworkChannel {
             }
         }
 
-        this.finalStatusListeners.put(connection.connection) {
+        this.finalStatusListeners.put(connection.vanillaConnection) {
             callback.accept(it.status)
         }
     }
@@ -58,26 +62,29 @@ abstract class NetworkChannel {
         StevesLibNetworkEvent.CONNECTION_FINAL_STATUS.register(this::onConnectionFinalStatusEvent)
         StevesLibNetworkEvent.CONNECTION_END.register(this::onConnectionEndEvent)
         StevesLibNetworkEvent.LOGIN_READY_TO_ACCEPT.register(this::onLoginReadyToAcceptEvent)
+        StevesLibNetworkEvent.REGISTER_CHANNELS.register(this::onRegisterChannelsEvent)
     }
 
+    protected open fun getDependencies(connection: StevesLibConnection): Iterable<NetworkChannel> = emptyList()
 
-    open protected fun getDependencies(connection: StevesLibConnection): Iterable<NetworkChannel> = emptyList()
+    private fun onRegisterChannelsEvent(consumer: Consumer<ResourceLocation>) {
+        consumer.accept(this.channelId)
+    }
 
-    protected open fun onLoginReadyToAcceptEvent(handler: ServerLoginPacketListenerImpl, interrupt: Runnable) {
+    protected open fun onLoginReadyToAcceptEvent(handler: ServerLoginPacketListenerImpl): EventResult {
         val connection = StevesLibConnection.get(handler.connection)
 
         if (!connection.hasConnectionData(this.connectionDataKey)) {
-            interrupt.run()
-            return
+            return EventResult.interruptFalse()
         }
 
         val channelConnection = this.getConnection(connection)
 
         if (channelConnection.status != NetworkChannelConnectionStatus.NEGOTIATING) {
-            return
+            return EventResult.pass()
         }
 
-        interrupt.run()
+        return EventResult.interruptFalse()
     }
 
     protected open fun onConnectionEndEvent(connection: StevesLibConnection) {
@@ -109,7 +116,7 @@ abstract class NetworkChannel {
 
         connection.addConnectionData(this.connectionDataKey, channelConnection)
 
-        if (connection.status != ConnectionStatus.READY) {
+        if (connection.status != ConnectionStatus.READY || !connection.isChannelSupported(this.channelId)) {
             channelConnection.status = NetworkChannelConnectionStatus.UNSUPPORTED
             this.onFinalStatusInternal(channelConnection)
 
@@ -122,15 +129,11 @@ abstract class NetworkChannel {
             return
         }
 
-        connection.registerUnrecognizedHandler(this.channelId) { this.onMessageUnrecognized(connection) }
-
         val buf = FriendlyByteBuf(Unpooled.buffer())
         buf.writeVarInt(this.protocolVersion)
 
-        connection.sendChannelMessage(this.channelId, buf)
+        connection.vanillaConnection.send(StevesLibNetwork.createChannelPacket(Env.SERVER, connection.protocol, this.channelId, buf))
     }
-
-
     private fun onIncomingData(connection: StevesLibConnection, data: FriendlyByteBuf) {
         val channelConnection = this.getConnection(connection)
 
@@ -151,7 +154,7 @@ abstract class NetworkChannel {
 
                 if (!this.checkCompatibility(this.protocolVersion, true, version)) {
                     buf.writeBoolean(false)
-                    connection.sendChannelMessage(this.channelId, buf)
+                    connection.vanillaConnection.send(StevesLibNetwork.createChannelPacket(Env.CLIENT, connection.protocol, this.channelId, buf))
 
                     channelConnection.status = NetworkChannelConnectionStatus.INCOMPATIBLE
                     this.onFinalStatusInternal(channelConnection)
@@ -160,7 +163,7 @@ abstract class NetworkChannel {
                 }
 
                 buf.writeBoolean(true)
-                connection.sendChannelMessage(this.channelId, buf)
+                connection.vanillaConnection.send(StevesLibNetwork.createChannelPacket(Env.CLIENT, connection.protocol, this.channelId, buf))
 
                 channelConnection.status = NetworkChannelConnectionStatus.READY
                 this.onFinalStatusInternal(channelConnection)
@@ -182,14 +185,6 @@ abstract class NetworkChannel {
         }
     }
 
-    private fun onMessageUnrecognized(connection: StevesLibConnection) {
-        if (connection.env != Env.SERVER) {
-            return
-        }
-
-        val channelConnection = this.getConnection(connection)
-
-        channelConnection.status = NetworkChannelConnectionStatus.UNSUPPORTED
-        this.onFinalStatusInternal(channelConnection)
-    }
+    protected fun createPacket(sendingEnv: Env, protocol: ConnectionProtocol, data: FriendlyByteBuf) =
+        StevesLibNetwork.createChannelPacket(sendingEnv, protocol, this.channelId, data)
 }

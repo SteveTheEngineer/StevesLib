@@ -43,7 +43,7 @@ public class ClientHandshakePacketListenerImplMixin {
 
         if (!connection.getStatus().isFinal()) {
             connection.setStatus(ConnectionStatus.UNSUPPORTED);
-            StevesLibNetworkEvent.INSTANCE.getCONNECTION_FINAL_STATUS().invoker().finalStatus(connection);
+            StevesLibNetworkEvent.Companion.getCONNECTION_FINAL_STATUS().invoker().finalStatus(connection);
         }
     }
 
