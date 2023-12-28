@@ -14,6 +14,8 @@ import net.minecraft.network.ConnectionProtocol
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.Packet
+import net.minecraft.network.protocol.game.ClientGamePacketListener
+import net.minecraft.network.protocol.game.ServerGamePacketListener
 import net.minecraft.resources.ResourceLocation
 import java.util.function.BiConsumer
 import java.util.function.Function
@@ -118,6 +120,12 @@ open class ObjectNetworkChannel(
 
         return super.createPacket(sendingEnv, protocol, messageData)
     }
+
+    open fun createServerPlayPacket(message: Any): Packet<ClientGamePacketListener> =
+        this.createPacket(Env.SERVER, ConnectionProtocol.PLAY, message) as Packet<ClientGamePacketListener>
+
+    open fun createClientPlayPacket(message: Any): Packet<ServerGamePacketListener> =
+        this.createPacket(Env.CLIENT, ConnectionProtocol.PLAY, message) as Packet<ServerGamePacketListener>
 
     open fun send(sink: ExtendedPacketSink, message: Any) {
         val packet = this.createPacket(sink.sendingEnv, sink.protocol, message)

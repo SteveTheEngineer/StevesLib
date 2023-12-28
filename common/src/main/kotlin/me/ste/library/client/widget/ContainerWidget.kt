@@ -16,9 +16,7 @@ abstract class ContainerWidget(
     var x: Int,
     var y: Int,
     var width: Int,
-    var height: Int,
-
-    val parent: AbstractContainerEventHandler? = null,
+    var height: Int
 ) : AbstractContainerEventHandler(), NarratableEntry, Renderable {
     private var firstRender = true
     protected var isHovered = false
@@ -93,7 +91,7 @@ abstract class ContainerWidget(
     }
 
     override fun narrationPriority(): NarratableEntry.NarrationPriority {
-        if (this.parent?.focused == this) {
+        if (this.isFocused) {
             return NarratableEntry.NarrationPriority.FOCUSED
         }
 
