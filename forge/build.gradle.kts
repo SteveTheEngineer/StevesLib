@@ -1,7 +1,7 @@
 import net.fabricmc.loom.LoomGradleExtension
 
 plugins {
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.github.johnrengelman.shadow")
 }
 
 architectury {
@@ -35,7 +35,7 @@ repositories {
 dependencies {
     forge("net.minecraftforge:forge:${project.property("forge_version")}")
 
-    modImplementation("thedarkcolour:kotlinforforge:${project.property("kff_version")}")
+    implementation("thedarkcolour:kotlinforforge:${project.property("kff_version")}")
     modApi("dev.architectury:architectury-forge:${rootProject.property("architectury_version")}")
 
     common(project(":common", "namedElements")) { isTransitive = false }

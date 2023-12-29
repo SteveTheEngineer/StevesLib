@@ -5,6 +5,7 @@ plugins {
     id("architectury-plugin") version "3.4.151"
     id("dev.architectury.loom") version "1.4.373" apply false
 
+    id("com.github.johnrengelman.shadow") version "8.1.1" apply false
     kotlin("jvm") version "1.9.22" apply false
 }
 
