@@ -7,7 +7,14 @@ import net.minecraft.world.entity.Entity
 
 interface StevesLibEntityEvent {
     companion object {
+        /**
+         * Called after the spawn packet is sent.
+         */
         val PAIRING_ADD: Event<PairingChange> = EventFactory.createLoop()
+
+        /**
+         * Called after the remove packet is sent.
+         */
         val PAIRING_REMOVE: Event<PairingChange> = EventFactory.createLoop()
     }
 

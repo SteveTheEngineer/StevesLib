@@ -1,21 +1,22 @@
 {
-    "required": true,
-    "minVersion": "0.8",
-    "package": "me.ste.library.fabric.mixin",
-    "compatibilityLevel": "JAVA_17",
-    "mixins": [
-        "common.EntityMixin",
-        "common.LivingEntityMixin",
-        "common.ServerLoginNetworkAddonMixin",
-        "common.level.LevelChunkMixin",
-        "common.level.LevelMixin"
-    ],
-    "client": [
-        "client.LevelRendererMixin",
-        "client.MultiPlayerGameModeMixin",
-        "client.PlayerRendererMixin"
-    ],
-    "injectors": {
-        "defaultRequire": 1
+  "required": true,
+  "minVersion": "0.8",
+  "package": "me.ste.library.fabric.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "common.EntityMixin",
+    "common.LivingEntityMixin",
+    "common.ServerEntityMixin",
+    "common.ServerLoginNetworkAddonMixin",
+    "common.level.LevelChunkMixin",
+    "common.level.LevelMixin"
+  ],
+  "client": [
+    "client.LevelRendererMixin",
+    "client.MultiPlayerGameModeMixin",
+    "client.PlayerRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
   }
 }
