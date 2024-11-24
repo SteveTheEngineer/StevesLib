@@ -30,9 +30,9 @@ repositories {
 
 dependencies {
     modImplementation("net.fabricmc:fabric-loader:${rootProject.property("fabric_loader_version")}")
-    modApi("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_api_version")}")
+    modApi("net.fabricmc.fabric-api:fabric-api:${rootProject.property("fabric_api_version")}")
 
-    modImplementation("net.fabricmc:fabric-language-kotlin:1.10.17+kotlin.1.9.22")
+    modImplementation("net.fabricmc:fabric-language-kotlin:${rootProject.property("fabric_language_kotlin_version")}")
     modApi("dev.architectury:architectury-fabric:${rootProject.property("architectury_version")}") {
         exclude(group = "net.fabricmc", module = "fabric-loader")
     }

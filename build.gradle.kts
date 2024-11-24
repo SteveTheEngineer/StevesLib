@@ -6,7 +6,7 @@ plugins {
     id("dev.architectury.loom") version "1.4.373" apply false
 
     id("com.github.johnrengelman.shadow") version "8.1.1" apply false
-    kotlin("jvm") version "1.9.22" apply false
+    kotlin("jvm") apply false
 }
 
 val minecraftVersion = rootProject.property("minecraft_version") as String
@@ -71,6 +71,9 @@ allprojects {
 val replaceTokens by extra {
     mapOf(
         "version" to project.version,
+        "mcVersion" to rootProject.property("minecraft_version") as String,
+        "forgeVersion" to rootProject.property("forge_version") as String,
+        "kffVersion" to rootProject.property("kotlin_for_forge_version") as String,
         "license" to rootProject.property("mod_license") as String,
         "issues" to rootProject.property("mod_issues") as String,
         "name" to rootProject.property("mod_name") as String,

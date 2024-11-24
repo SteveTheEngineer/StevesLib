@@ -35,7 +35,7 @@ repositories {
 dependencies {
     forge("net.minecraftforge:forge:${project.property("forge_version")}")
 
-    implementation("thedarkcolour:kotlinforforge:${project.property("kff_version")}")
+    implementation("thedarkcolour:kotlinforforge:${project.property("kotlin_for_forge_version")}")
     modApi("dev.architectury:architectury-forge:${rootProject.property("architectury_version")}")
 
     common(project(":common", "namedElements")) { isTransitive = false }
@@ -44,14 +44,10 @@ dependencies {
 
 val replaceTokens: Map<String, String> by rootProject.extra
 tasks.processResources {
-    val tokens = replaceTokens + mapOf(
-        "kffVersion" to project.property("kff_version") as String
-    )
-
-    inputs.properties(tokens)
+    inputs.properties(replaceTokens)
 
     filesMatching("META-INF/mods.toml") {
-        expand(tokens)
+        expand(replaceTokens)
     }
 }
 

@@ -7,6 +7,12 @@ pluginManagement {
         maven("https://maven.minecraftforge.net/")
         gradlePluginPortal()
     }
+
+    val kotlinVersion: String by settings
+
+    plugins {
+        kotlin("jvm") version kotlinVersion
+    }
 }
 
 include("common")
